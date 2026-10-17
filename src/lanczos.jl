@@ -24,13 +24,13 @@ Steps:
 # Compute dot(a, b) into pre-allocated acc, using tmp as scratch -- zero allocations
 function _bf_dot!(acc::BigFloat, tmp::BigFloat, a::Vector{BigFloat}, b::Vector{BigFloat})
     rnd = Base.MPFR.ROUNDING_MODE[]
-    ccall((:mpfr_set_ui, :libmpfr), Int32,
+    ccall((:mpfr_set_ui, Base.MPFR.libmpfr), Int32,
           (Ref{BigFloat}, Culong, Base.MPFR.MPFRRoundingMode), acc, 0, rnd)
     @inbounds for i in eachindex(a)
-        ccall((:mpfr_mul, :libmpfr), Int32,
+        ccall((:mpfr_mul, Base.MPFR.libmpfr), Int32,
               (Ref{BigFloat}, Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode),
               tmp, a[i], b[i], rnd)
-        ccall((:mpfr_add, :libmpfr), Int32,
+        ccall((:mpfr_add, Base.MPFR.libmpfr), Int32,
               (Ref{BigFloat}, Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode),
               acc, acc, tmp, rnd)
     end
@@ -40,10 +40,10 @@ end
 function _bf_axpy_neg!(a::BigFloat, x::Vector{BigFloat}, y::Vector{BigFloat}, tmp::BigFloat)
     rnd = Base.MPFR.ROUNDING_MODE[]
     @inbounds for i in eachindex(x)
-        ccall((:mpfr_mul, :libmpfr), Int32,
+        ccall((:mpfr_mul, Base.MPFR.libmpfr), Int32,
               (Ref{BigFloat}, Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode),
               tmp, a, x[i], rnd)
-        ccall((:mpfr_sub, :libmpfr), Int32,
+        ccall((:mpfr_sub, Base.MPFR.libmpfr), Int32,
               (Ref{BigFloat}, Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode),
               y[i], y[i], tmp, rnd)
     end
